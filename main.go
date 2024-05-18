@@ -1,10 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
-	for i := 0; i < 1000; i++ {
+	r := gin.Default()
 
-		fmt.Println("hello")
-	}
+	r.POST("/login", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "hogehogesigeru",
+		})
+	})
+
+	// group化するときの記述
+	// v1 := r.Group("/v1")
+	// {
+	// 	v1.GET("/home", func(c *gin.Context) {
+	// 		c.JSON(http.StatusOK, gin.H{
+	// 			"message": "hogehogesigeru",
+	// 		})
+	// 	})
+	// }
+	r.Run()
 }

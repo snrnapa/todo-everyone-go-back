@@ -3,7 +3,10 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/snrnapa/todo-everyone-go-back/model"
@@ -56,4 +59,44 @@ func (uh *UserHandler) Register(c *gin.Context) {
 	user.Password = string(hashedPassword)
 	user.Id = uuid.New().String()
 	uh.userUsecase.Register(user)
+}
+
+func (uh *UserHandler) Login(c *gin.Context) {
+
+	var user model.MstUser
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	foundUser, err := uh.userUsecase.GetUser(user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while logging in"})
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.Password)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
+		return
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":  user.Id,
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+	})
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "JWT Secret not found"})
+		return
+	}
+
+	tokenString, err := token.SignedString([]byte(jwtSecret))
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while generating token"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+
 }

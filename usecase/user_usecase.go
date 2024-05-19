@@ -25,8 +25,8 @@ func (uc *UserUsecase) GetUsers() ([]model.MstUser, error) {
 	return response, err
 }
 
-func (uc *UserUsecase) GetUser(id string) (model.MstUser, error) {
-	response, err := uc.userRepository.GetUser(id)
+func (uc *UserUsecase) GetUser(email string) (model.MstUser, error) {
+	response, err := uc.userRepository.GetUser(email)
 	if err != nil {
 		fmt.Println("failed to GetUser :", err)
 	}

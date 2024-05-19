@@ -22,15 +22,9 @@ func (ur *UserRepository) GetUsers() ([]model.MstUser, error) {
 	return users, result.Error
 }
 
-func (ur *UserRepository) GetUser(id string) (model.MstUser, error) {
+func (ur *UserRepository) GetUser(email string) (model.MstUser, error) {
 	var user model.MstUser
-	result := ur.Database.Where("id = ?", id).Find(&user)
-	return user, result.Error
-}
-
-func (ur *UserRepository) GetMaxCount(id string) (model.MstUser, error) {
-	var user model.MstUser
-	result := ur.Database.Where("id = ?", id).Find(&user)
+	result := ur.Database.Where("email = ?", email).Find(&user)
 	return user, result.Error
 }
 

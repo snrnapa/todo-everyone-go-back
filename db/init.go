@@ -50,7 +50,7 @@ func CreateInitData() {
 
 	fmt.Println("start createting init user data")
 	if count == 0 {
-		count := 100
+		count := 3
 		for i := 0; i < count; i++ {
 			countString := strconv.Itoa(i)
 			userName := "TestUser" + countString

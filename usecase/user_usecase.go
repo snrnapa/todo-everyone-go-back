@@ -32,3 +32,11 @@ func (uc *UserUsecase) GetUser(id string) (model.MstUser, error) {
 	}
 	return response, err
 }
+
+func (uc *UserUsecase) Register(userCredential model.MstUser) (model.MstUser, error) {
+	response, err := uc.userRepository.Register(userCredential)
+	if err != nil {
+		fmt.Println("failed to Register :", err)
+	}
+	return response, err
+}

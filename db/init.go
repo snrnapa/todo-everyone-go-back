@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/snrnapa/todo-everyone-go-back/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -22,6 +23,12 @@ func Init(dsn string) {
 		if err != nil {
 			panic(fmt.Sprintf("failed to connecting database : %v", err))
 		}
+
+		err = db.AutoMigrate(&model.MstUser{})
+		if err != nil {
+			panic(fmt.Sprintf("failed to migrate database: %v", err))
+		}
+
 	})
 }
 
@@ -49,17 +56,17 @@ func CreateInitData() {
 			userName := "TestUser" + countString
 			userEmail := "testuser" + countString + "@gmail.com"
 			age := i
-			id := i
+			id := uuid.New().String()
 
 			db.Create(
 				&model.MstUser{
-					Id:    strconv.Itoa(id),
-					Name:  userName,
-					Email: userEmail,
-					Age:   age,
+					Id:       id,
+					Password: "dummypass",
+					Name:     userName,
+					Email:    userEmail,
+					Age:      age,
 				})
 		}
-		db.AutoMigrate(&model.MstUser{})
 	} else {
 		fmt.Println("dont create init data Because you already have", count, "records")
 

@@ -27,3 +27,17 @@ func (ur *UserRepository) GetUser(id string) (model.MstUser, error) {
 	result := ur.Database.Where("id = ?", id).Find(&user)
 	return user, result.Error
 }
+
+func (ur *UserRepository) GetMaxCount(id string) (model.MstUser, error) {
+	var user model.MstUser
+	result := ur.Database.Where("id = ?", id).Find(&user)
+	return user, result.Error
+}
+
+func (ur *UserRepository) Register(userCredential model.MstUser) (model.MstUser, error) {
+	err := ur.Database.Save(&userCredential).Error
+	if err != nil {
+		return userCredential, err
+	}
+	return userCredential, err
+}

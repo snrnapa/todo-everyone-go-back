@@ -24,6 +24,8 @@ func main() {
 
 	r.GET("/users", userHandler.GetUsers)
 	r.GET("/user", userHandler.GetUser)
+	r.POST("/register", userHandler.Register)
+	// r.POST("/login", userHandler.Login)
 
 	// group化するときの記述
 	// v1 := r.Group("/v1")

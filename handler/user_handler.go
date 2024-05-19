@@ -5,7 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/snrnapa/todo-everyone-go-back/model"
 	"github.com/snrnapa/todo-everyone-go-back/usecase"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
@@ -35,4 +38,22 @@ func (uh *UserHandler) GetUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 	}
 	c.JSON(http.StatusOK, user)
+}
+
+func (uh *UserHandler) Register(c *gin.Context) {
+
+	var user model.MstUser
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while hashing password"})
+		return
+	}
+	user.Password = string(hashedPassword)
+	user.Id = uuid.New().String()
+	uh.userUsecase.Register(user)
 }

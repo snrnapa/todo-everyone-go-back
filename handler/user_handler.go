@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,6 +19,20 @@ func NewUserHandler(userUsecase *usecase.UserUsecase) *UserHandler {
 }
 
 func (uh *UserHandler) GetUsers(c *gin.Context) {
-	users := uh.userUsecase.GetUsers()
+	users, err := uh.userUsecase.GetUsers()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
 	c.JSON(http.StatusOK, users)
+}
+
+func (uh *UserHandler) GetUser(c *gin.Context) {
+
+	idStr := c.Query("id")
+	fmt.Println("input id :", idStr)
+	user, err := uh.userUsecase.GetUser(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	c.JSON(http.StatusOK, user)
 }

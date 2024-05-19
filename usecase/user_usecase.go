@@ -1,0 +1,34 @@
+package usecase
+
+import (
+	"fmt"
+
+	"github.com/snrnapa/todo-everyone-go-back/model"
+	"github.com/snrnapa/todo-everyone-go-back/repository"
+)
+
+type UserUsecase struct {
+	userRepository *repository.UserRepository
+}
+
+func NewUserUsecase(userRepository *repository.UserRepository) *UserUsecase {
+	return &UserUsecase{
+		userRepository: userRepository,
+	}
+}
+
+func (uc *UserUsecase) GetUsers() ([]model.MstUser, error) {
+	response, err := uc.userRepository.GetUsers()
+	if err != nil {
+		fmt.Println("failed to GetUsers :", err)
+	}
+	return response, err
+}
+
+func (uc *UserUsecase) GetUser(id string) (model.MstUser, error) {
+	response, err := uc.userRepository.GetUser(id)
+	if err != nil {
+		fmt.Println("failed to GetUser :", err)
+	}
+	return response, err
+}

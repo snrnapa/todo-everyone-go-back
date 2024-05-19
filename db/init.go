@@ -30,7 +30,6 @@ func GetDbInstantce() *gorm.DB {
 }
 
 func CreateInitData() {
-	fmt.Println("start createting init user data")
 	var users []model.MstUser
 	var count int64
 
@@ -42,6 +41,7 @@ func CreateInitData() {
 		fmt.Println("initial date:", count)
 	}
 
+	fmt.Println("start createting init user data")
 	if count == 0 {
 		count := 100
 		for i := 0; i < count; i++ {
@@ -49,11 +49,11 @@ func CreateInitData() {
 			userName := "TestUser" + countString
 			userEmail := "testuser" + countString + "@gmail.com"
 			age := i
-			id := i + 10000
+			id := i
 
 			db.Create(
 				&model.MstUser{
-					Id:    id,
+					Id:    strconv.Itoa(id),
 					Name:  userName,
 					Email: userEmail,
 					Age:   age,

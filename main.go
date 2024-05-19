@@ -23,6 +23,7 @@ func main() {
 	)
 
 	r.GET("/users", userHandler.GetUsers)
+	r.GET("/user", userHandler.GetUser)
 
 	// group化するときの記述
 	// v1 := r.Group("/v1")

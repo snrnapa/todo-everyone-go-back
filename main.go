@@ -1,10 +1,11 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/snrnapa/todo-everyone-go-back/db"
+	"github.com/snrnapa/todo-everyone-go-back/handler"
+	"github.com/snrnapa/todo-everyone-go-back/repository"
+	"github.com/snrnapa/todo-everyone-go-back/usecase"
 )
 
 func main() {
@@ -15,11 +16,13 @@ func main() {
 
 	r := gin.Default()
 
-	r.POST("/login", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "hogehogesigeru",
-		})
-	})
+	userHandler := handler.NewUserHandler(
+		usecase.NewUserUsecase(
+			repository.NewUserRepository(),
+		),
+	)
+
+	r.GET("/users", userHandler.GetUsers)
 
 	// group化するときの記述
 	// v1 := r.Group("/v1")

@@ -3,13 +3,11 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/snrnapa/todo-everyone-go-back/model"
+	"github.com/snrnapa/todo-everyone-go-back/token"
 	"github.com/snrnapa/todo-everyone-go-back/usecase"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -58,7 +56,13 @@ func (uh *UserHandler) Register(c *gin.Context) {
 	}
 	user.Password = string(hashedPassword)
 	user.Id = uuid.New().String()
-	uh.userUsecase.Register(user)
+
+	if err := uh.userUsecase.Register(user); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while registering user"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+
 }
 
 func (uh *UserHandler) Login(c *gin.Context) {
@@ -71,32 +75,26 @@ func (uh *UserHandler) Login(c *gin.Context) {
 
 	foundUser, err := uh.userUsecase.GetUser(user.Email)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while logging in"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Println(foundUser.Password)
+	fmt.Println(user.Password)
 
 	if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
+		c.JSON(http.StatusBadRequest, gin.H{"error CompareHashAndPassword": err.Error()})
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":  user.Id,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
-	})
-
-	jwtSecret := os.Getenv("JWT_SECRET")
-	if jwtSecret == "" {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "JWT Secret not found"})
-		return
-	}
-
-	tokenString, err := token.SignedString([]byte(jwtSecret))
+	token, err := token.GenerateToken(user.ID)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while generating token"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
 
 }

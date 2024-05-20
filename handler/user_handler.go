@@ -32,9 +32,9 @@ func (uh *UserHandler) GetUsers(c *gin.Context) {
 
 func (uh *UserHandler) GetUser(c *gin.Context) {
 
-	idStr := c.Query("id")
-	fmt.Println("input id :", idStr)
-	user, err := uh.userUsecase.GetUser(idStr)
+	email := c.Query("email")
+	fmt.Println("input email :", email)
+	user, err := uh.userUsecase.GetUser(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}
@@ -78,8 +78,6 @@ func (uh *UserHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(foundUser.Password)
-	fmt.Println(user.Password)
 
 	if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.Password)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error CompareHashAndPassword": err.Error()})
@@ -96,5 +94,20 @@ func (uh *UserHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
-
 }
+
+// func (uh *UserHandler) CurrentUser(c *gin.Context) {
+// 	userId, err := token.ExtractTokenId(c)
+
+// 	var user model.MstUser
+// 	if err := c.BindJSON(&user); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// }

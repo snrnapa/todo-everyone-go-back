@@ -78,11 +78,9 @@ func ExtractTokenId(c *gin.Context) (uint, error) {
 
 	if ok && token.Valid {
 		userId, ok := claims["user_id"].(float64)
-
 		if !ok {
 			return 0, nil
 		}
-
 		return uint(userId), nil
 	}
 

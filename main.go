@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/snrnapa/todo-everyone-go-back/db"
 	"github.com/snrnapa/todo-everyone-go-back/handler"
+	"github.com/snrnapa/todo-everyone-go-back/middlewares"
 	"github.com/snrnapa/todo-everyone-go-back/repository"
 	"github.com/snrnapa/todo-everyone-go-back/usecase"
 )
@@ -31,9 +32,13 @@ func main() {
 	)
 
 	r.GET("/users", userHandler.GetUsers)
-	r.GET("/user", userHandler.GetUser)
+	// r.GET("/user", userHandler.GetUser)
 	r.POST("/register", userHandler.Register)
 	r.POST("/login", userHandler.Login)
+
+	protected := r.Group("/api/admin")
+	protected.Use(middlewares.JwtAuthMiddleware())
+	protected.GET("/user", userHandler.GetUser)
 
 	// r.POST("/login", userHandler.Login)
 

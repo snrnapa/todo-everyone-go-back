@@ -31,6 +31,12 @@ func main() {
 		),
 	)
 
+	todoHandler := handler.NewTodoHandler(
+		usecase.NewTodoUsecase(
+			repository.NewTodoRepository(),
+		),
+	)
+
 	r.GET("/users", userHandler.GetUsers)
 	// r.GET("/user", userHandler.GetUser)
 	r.POST("/register", userHandler.Register)
@@ -39,6 +45,8 @@ func main() {
 	protected := r.Group("/v1")
 	protected.Use(middlewares.JwtAuthMiddleware())
 	protected.GET("/user", userHandler.GetUser)
+	protected.GET("/todos", todoHandler.GetTodos)
+	protected.POST("/todo", todoHandler.InsertTodo)
 
 	// r.POST("/login", userHandler.Login)
 

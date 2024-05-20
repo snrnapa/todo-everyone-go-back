@@ -1,12 +1,17 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"time"
 
-type MstTodo struct {
-	Id       string `gorm:"type:varchar(100);not null;primaryKey" json:"id"`
-	Password string `gorm:"type:varchar(100);not null" json:"password"`
-	Name     string `gorm:"type:varchar(100);" json:"name"`
-	Age      int    `gorm:"type:numeric(3)" json:"age"`
-	Email    string `gorm:"type:varchar(100);not null;primaryKey" json:"email"`
+	"gorm.io/gorm"
+)
+
+type Todo struct {
+	UserId    string    `gorm:"type:varchar(100);not null;primaryKey" json:"user_id"`
+	TodoId    string    `gorm:"type:varchar(100);not null;primaryKey" json:"todo_id"`
+	Title     string    `gorm:"type:varchar(100);not null" json:"title"`
+	Limit     time.Time `gorm:"type:timestamp;" json:"limit"`
+	Detail    string    `gorm:"type:varchar(100);" json:"detail"`
+	Completed bool      `gorm:"type:boolean;not null" json:"completed"`
 	gorm.Model
 }

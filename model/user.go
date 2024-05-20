@@ -2,7 +2,7 @@ package model
 
 import "gorm.io/gorm"
 
-type MstUser struct {
+type User struct {
 	Id       string `gorm:"type:varchar(100);not null;primaryKey" json:"id"`
 	Password string `gorm:"type:varchar(100);not null" json:"password"`
 	Name     string `gorm:"type:varchar(100);" json:"name"`

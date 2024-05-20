@@ -17,7 +17,7 @@ func NewUserUsecase(userRepository *repository.UserRepository) *UserUsecase {
 	}
 }
 
-func (uc *UserUsecase) GetUsers() ([]model.MstUser, error) {
+func (uc *UserUsecase) GetUsers() ([]model.User, error) {
 	response, err := uc.userRepository.GetUsers()
 	if err != nil {
 		fmt.Println("failed to GetUsers :", err)
@@ -25,7 +25,7 @@ func (uc *UserUsecase) GetUsers() ([]model.MstUser, error) {
 	return response, err
 }
 
-func (uc *UserUsecase) GetUser(email string) (model.MstUser, error) {
+func (uc *UserUsecase) GetUser(email string) (model.User, error) {
 	response, err := uc.userRepository.GetUser(email)
 	if err != nil {
 		fmt.Println("failed to GetUser :", err)
@@ -33,7 +33,7 @@ func (uc *UserUsecase) GetUser(email string) (model.MstUser, error) {
 	return response, err
 }
 
-func (uc *UserUsecase) Register(userCredential model.MstUser) error {
+func (uc *UserUsecase) Register(userCredential model.User) error {
 	_, err := uc.userRepository.Register(userCredential)
 	if err != nil {
 		fmt.Println("failed to Register :", err)

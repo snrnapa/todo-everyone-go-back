@@ -36,7 +36,7 @@ func main() {
 	r.POST("/register", userHandler.Register)
 	r.POST("/login", userHandler.Login)
 
-	protected := r.Group("/api/admin")
+	protected := r.Group("/v1")
 	protected.Use(middlewares.JwtAuthMiddleware())
 	protected.GET("/user", userHandler.GetUser)
 

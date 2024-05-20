@@ -43,7 +43,7 @@ func (uh *UserHandler) GetUser(c *gin.Context) {
 
 func (uh *UserHandler) Register(c *gin.Context) {
 
-	var user model.MstUser
+	var user model.User
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -62,30 +62,31 @@ func (uh *UserHandler) Register(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
-
 }
 
 func (uh *UserHandler) Login(c *gin.Context) {
 
-	var user model.MstUser
+	var user model.User
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Usersテーブルから、Emailをキーとしてユーザー情報を取得
 	foundUser, err := uh.userUsecase.GetUser(user.Email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Usersテーブルから取得した暗号化したパスワードと、入力されたパスワードを比較
 	if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.Password)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error CompareHashAndPassword": err.Error()})
 		return
 	}
 
+	// パスワードが正しければ、tokenを作成する
 	token, err := token.GenerateToken(user.ID)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -95,19 +96,3 @@ func (uh *UserHandler) Login(c *gin.Context) {
 		"token": token,
 	})
 }
-
-// func (uh *UserHandler) CurrentUser(c *gin.Context) {
-// 	userId, err := token.ExtractTokenId(c)
-
-// 	var user model.MstUser
-// 	if err := c.BindJSON(&user); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// }

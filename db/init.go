@@ -24,7 +24,7 @@ func Init(dsn string) {
 			panic(fmt.Sprintf("failed to connecting database : %v", err))
 		}
 
-		err = db.AutoMigrate(&model.MstUser{})
+		err = db.AutoMigrate(&model.User{})
 		if err != nil {
 			panic(fmt.Sprintf("failed to migrate database: %v", err))
 		}
@@ -37,7 +37,7 @@ func GetDbInstantce() *gorm.DB {
 }
 
 func CreateInitData() {
-	var users []model.MstUser
+	var users []model.User
 	var count int64
 
 	result := db.Find(&users).Count(&count)
@@ -59,7 +59,7 @@ func CreateInitData() {
 			id := uuid.New().String()
 
 			db.Create(
-				&model.MstUser{
+				&model.User{
 					Id:       id,
 					Password: "dummypass",
 					Name:     userName,

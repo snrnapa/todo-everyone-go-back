@@ -51,6 +51,7 @@ func main() {
 	protected := r.Group("/v1")
 	protected.Use(middlewares.JwtAuthMiddleware())
 	protected.GET("/user", userHandler.GetUser)
+	protected.GET("/current-user", userHandler.FindCurrentUser)
 
 	// todo information
 	protected.GET("/todos", todoHandler.GetTodos)

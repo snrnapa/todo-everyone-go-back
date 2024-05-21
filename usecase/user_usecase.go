@@ -33,6 +33,14 @@ func (uc *UserUsecase) GetUser(email string) (model.User, error) {
 	return response, err
 }
 
+func (uc *UserUsecase) GetUserById(userId string) (model.User, error) {
+	response, err := uc.userRepository.GetUserById(userId)
+	if err != nil {
+		fmt.Println("failed to GetUser :", err)
+	}
+	return response, err
+}
+
 func (uc *UserUsecase) Register(userCredential model.User) error {
 	_, err := uc.userRepository.Register(userCredential)
 	if err != nil {

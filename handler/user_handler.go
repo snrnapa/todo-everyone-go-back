@@ -79,6 +79,8 @@ func (uh *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
+	fmt.Println(foundUser)
+
 	// Usersテーブルから取得した暗号化したパスワードと、入力されたパスワードを比較
 	if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.Password)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error CompareHashAndPassword": err.Error()})
@@ -86,7 +88,7 @@ func (uh *UserHandler) Login(c *gin.Context) {
 	}
 
 	// パスワードが正しければ、tokenを作成する
-	token, err := token.GenerateToken(user.ID)
+	token, err := token.GenerateToken(foundUser.Id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -95,4 +97,21 @@ func (uh *UserHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
+}
+
+func (uh *UserHandler) FindCurrentUser(c *gin.Context) {
+	userId, err := token.ExtractTokenId(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+	}
+
+	result, err := uh.userUsecase.GetUserById(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
+
 }

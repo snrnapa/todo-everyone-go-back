@@ -28,6 +28,12 @@ func (ur *UserRepository) GetUser(email string) (model.User, error) {
 	return user, result.Error
 }
 
+func (ur *UserRepository) GetUserById(userId string) (model.User, error) {
+	var user model.User
+	result := ur.Database.Where("id = ?", userId).Find(&user)
+	return user, result.Error
+}
+
 func (ur *UserRepository) Register(userCredential model.User) (model.User, error) {
 	err := ur.Database.Save(&userCredential).Error
 	if err != nil {

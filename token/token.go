@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GenerateToken(id uint) (string, error) {
+func GenerateToken(userId string) (string, error) {
 	tokenLifespan, err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
 
 	if err != nil {
@@ -20,12 +20,11 @@ func GenerateToken(id uint) (string, error) {
 
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
-	claims["user_id"] = id
+	claims["user_id"] = userId
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenLifespan)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString([]byte(os.Getenv("API_SECRET")))
-
 }
 
 func extractTokenString(c *gin.Context) string {
@@ -65,24 +64,24 @@ func TokenValid(c *gin.Context) error {
 	return nil
 }
 
-func ExtractTokenId(c *gin.Context) (uint, error) {
+func ExtractTokenId(c *gin.Context) (string, error) {
 	tokenString := extractTokenString(c)
 
 	token, err := parseToken(tokenString)
 
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if ok && token.Valid {
-		userId, ok := claims["user_id"].(float64)
+		userId, ok := claims["user_id"].(string)
 		if !ok {
-			return 0, nil
+			return "", nil
 		}
-		return uint(userId), nil
+		return userId, nil
 	}
 
-	return 0, nil
+	return "", nil
 }

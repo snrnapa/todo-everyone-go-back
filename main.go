@@ -37,6 +37,12 @@ func main() {
 		),
 	)
 
+	commentHandler := handler.NewCommentHandler(
+		usecase.NewCommentUsecase(
+			repository.NewCommentRepository(),
+		),
+	)
+
 	r.GET("/users", userHandler.GetUsers)
 	// r.GET("/user", userHandler.GetUser)
 	r.POST("/register", userHandler.Register)
@@ -50,6 +56,8 @@ func main() {
 	protected.GET("/todos", todoHandler.GetTodos)
 	protected.POST("/todo", todoHandler.InsertTodo)
 	protected.DELETE("/todo", todoHandler.DeleteTodo)
+	protected.POST("/comment", commentHandler.InsertComment)
 
 	r.Run()
+
 }

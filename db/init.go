@@ -34,6 +34,10 @@ func Init(dsn string) {
 			panic(fmt.Sprintf("failed to migrate database: %v", err))
 		}
 
+		err = db.AutoMigrate(&model.Comment{})
+		if err != nil {
+			panic(fmt.Sprintf("failed to migrate database: %v", err))
+		}
 	})
 }
 

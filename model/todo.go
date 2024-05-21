@@ -12,5 +12,13 @@ type Todo struct {
 	Limit     time.Time `gorm:"type:timestamp;" json:"limit"`
 	Detail    string    `gorm:"type:varchar(100);" json:"detail"`
 	Completed bool      `gorm:"type:boolean;not null" json:"completed"`
+	Comments  []Comment `gorm:"foreignKey:TodoID" json:"comments"`
 	gorm.Model
+}
+
+type Comment struct {
+	gorm.Model
+	TodoID uint   `gorm:"not null" json:"todo_id"`
+	UserId string `gorm:"type:varchar(100);not null" json:"user_id"`
+	Text   string `gorm:"type:varchar(255);" json:"text"`
 }

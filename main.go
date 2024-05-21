@@ -45,19 +45,11 @@ func main() {
 	protected := r.Group("/v1")
 	protected.Use(middlewares.JwtAuthMiddleware())
 	protected.GET("/user", userHandler.GetUser)
+
+	// todo information
 	protected.GET("/todos", todoHandler.GetTodos)
 	protected.POST("/todo", todoHandler.InsertTodo)
+	protected.DELETE("/todo", todoHandler.DeleteTodo)
 
-	// r.POST("/login", userHandler.Login)
-
-	// group化するときの記述
-	// v1 := r.Group("/v1")
-	// {
-	// 	v1.GET("/home", func(c *gin.Context) {
-	// 		c.JSON(http.StatusOK, gin.H{
-	// 			"message": "hogehogesigeru",
-	// 		})
-	// 	})
-	// }
 	r.Run()
 }

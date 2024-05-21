@@ -33,6 +33,14 @@ func (tu *TodoUsecase) InsertTodo(todo model.Todo) (model.Todo, error) {
 	return response, err
 }
 
+func (tu *TodoUsecase) DeleteTodo(id uint) error {
+	err := tu.todoRepository.DeleteTodo(id)
+	if err != nil {
+		fmt.Println("failed to InsertTodo :", err)
+	}
+	return err
+}
+
 // func (uc *TodoUsecase) GetUser(email string) (model.User, error) {
 // 	response, err := uc.userRepository.GetUser(email)
 // 	if err != nil {

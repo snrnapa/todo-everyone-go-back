@@ -26,3 +26,9 @@ func (todoRepo *TodoRepository) InsertTodo(todo model.Todo) (model.Todo, error) 
 	result := todoRepo.Database.Save(&todo)
 	return todo, result.Error
 }
+
+func (todoRepo *TodoRepository) DeleteTodo(id uint) error {
+	var todo model.Todo
+	result := todoRepo.Database.Unscoped().Delete(&todo, id)
+	return result.Error
+}

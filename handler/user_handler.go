@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/snrnapa/todo-everyone-go-back/model"
 	"github.com/snrnapa/todo-everyone-go-back/token"
@@ -41,23 +42,42 @@ func (uh *UserHandler) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+type RegisterInput struct {
+	Email          string `json:"email" validate:"required,email"`
+	Password       string `json:"password" validate:"required,min=8"`
+	RetypePassword string `json:"retype_password" validate:"required,eqfield=Password"`
+}
+
 func (uh *UserHandler) Register(c *gin.Context) {
 
-	var user model.User
-	if err := c.BindJSON(&user); err != nil {
+	var registerInput RegisterInput
+	if err := c.BindJSON(&registerInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	// var validate *validator.Validate
+	validate := validator.New()
+
+	err := validate.Struct(registerInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"validation Error": err.Error()})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerInput.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while hashing password"})
 		return
 	}
-	user.Password = string(hashedPassword)
-	user.Id = uuid.New().String()
 
-	if err := uh.userUsecase.Register(user); err != nil {
+	registerUser := model.User{
+		Id:       uuid.New().String(),
+		Password: string(hashedPassword),
+		Email:    registerInput.Email,
+	}
+
+	if err := uh.userUsecase.Register(registerUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while registering user"})
 		return
 	}

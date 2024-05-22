@@ -1,6 +1,7 @@
 package token
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -11,9 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GenerateToken(userId string) (string, error) {
+func GenerateToken(userId uint) (string, error) {
 	tokenLifespan, err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
-
 	if err != nil {
 		return "", err
 	}
@@ -64,24 +64,24 @@ func TokenValid(c *gin.Context) error {
 	return nil
 }
 
-func ExtractTokenId(c *gin.Context) (string, error) {
+func ExtractTokenId(c *gin.Context) (uint, error) {
 	tokenString := extractTokenString(c)
 
 	token, err := parseToken(tokenString)
 
 	if err != nil {
-		return "", err
+		return 0, errors.New("parse Token")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if ok && token.Valid {
-		userId, ok := claims["user_id"].(string)
+		userId, ok := claims["user_id"].(float64)
 		if !ok {
-			return "", nil
+			return 0, errors.New("invailed Token")
 		}
-		return userId, nil
+		return uint(userId), nil
 	}
 
-	return "", nil
+	return 0, errors.New("invailed Token")
 }

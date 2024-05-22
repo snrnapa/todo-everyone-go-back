@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/google/uuid"
 	"github.com/snrnapa/todo-everyone-go-back/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -64,11 +63,9 @@ func CreateInitData() {
 			userName := "TestUser" + countString
 			userEmail := "testuser" + countString + "@gmail.com"
 			age := i
-			id := uuid.New().String()
 
 			db.Create(
 				&model.User{
-					Id:       id,
 					Password: "dummypass",
 					Name:     userName,
 					Email:    userEmail,

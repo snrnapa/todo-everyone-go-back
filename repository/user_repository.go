@@ -28,9 +28,9 @@ func (ur *UserRepository) GetUser(email string) (model.User, error) {
 	return user, result.Error
 }
 
-func (ur *UserRepository) GetUserById(userId string) (model.User, error) {
+func (ur *UserRepository) GetUserById(userId uint) (model.User, error) {
 	var user model.User
-	result := ur.Database.Where("id = ?", userId).Find(&user)
+	result := ur.Database.Where("ID = ?", userId).Find(&user)
 	return user, result.Error
 }
 

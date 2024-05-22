@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/snrnapa/todo-everyone-go-back/model"
 	"github.com/snrnapa/todo-everyone-go-back/token"
 	"github.com/snrnapa/todo-everyone-go-back/usecase"
@@ -49,7 +48,6 @@ func (uh *AuthHandler) Register(c *gin.Context) {
 	}
 
 	registerUser := model.User{
-		Id:       uuid.New().String(),
 		Password: string(hashedPassword),
 		Email:    registerInput.Email,
 	}
@@ -83,7 +81,7 @@ func (uh *AuthHandler) Login(c *gin.Context) {
 	}
 
 	// パスワードが正しければ、tokenを作成する
-	token, err := token.GenerateToken(foundUser.Id)
+	token, err := token.GenerateToken(foundUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -79,8 +79,6 @@ func (uh *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(foundUser)
-
 	// Usersテーブルから取得した暗号化したパスワードと、入力されたパスワードを比較
 	if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.Password)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error CompareHashAndPassword": err.Error()})

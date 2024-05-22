@@ -19,9 +19,9 @@ func main() {
 
 	}
 
-	dsn := "host=localhost user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=localhost user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Tokyo"
 	db.Init(dsn)
-	db.CreateInitData()
+	// db.CreateInitData()
 
 	r := gin.Default()
 
@@ -43,13 +43,14 @@ func main() {
 		),
 	)
 
-	r.GET("/users", userHandler.GetUsers)
+	// r.GET("/users", userHandler.GetUsers)
 	// r.GET("/user", userHandler.GetUser)
 	r.POST("/register", userHandler.Register)
 	r.POST("/login", userHandler.Login)
 
 	protected := r.Group("/v1")
 	protected.Use(middlewares.JwtAuthMiddleware())
+
 	protected.GET("/user", userHandler.GetUser)
 	protected.GET("/current-user", userHandler.FindCurrentUser)
 

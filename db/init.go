@@ -57,7 +57,6 @@ func CreateInitData() {
 		fmt.Println("initial date:", count)
 	}
 
-	fmt.Println("start createting init user data")
 	if count == 0 {
 		count := 3
 		for i := 0; i < count; i++ {
@@ -78,7 +77,6 @@ func CreateInitData() {
 		}
 	} else {
 		fmt.Println("dont create init data Because you already have", count, "records")
-
 	}
 
 	fmt.Println("completed createting init user data")

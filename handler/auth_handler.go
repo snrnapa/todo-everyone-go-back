@@ -103,8 +103,6 @@ func (uh *AuthHandler) FindCurrentUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": result,
-	})
+	c.JSON(http.StatusOK, result)
 
 }

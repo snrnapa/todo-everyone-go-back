@@ -55,3 +55,18 @@ func (th *TodoHandler) DeleteTodo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, todo)
 }
+
+func (th *TodoHandler) UpdateTodo(c *gin.Context) {
+
+	var todo model.Todo
+	if err := c.BindJSON(&todo); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := th.todoUsecase.UpdateTodo(todo)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	c.JSON(http.StatusOK, todo)
+}

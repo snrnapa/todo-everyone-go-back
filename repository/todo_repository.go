@@ -32,3 +32,10 @@ func (todoRepo *TodoRepository) DeleteTodo(id uint) error {
 	result := todoRepo.Database.Unscoped().Delete(&todo, id)
 	return result.Error
 }
+
+func (todoRepo *TodoRepository) UpdateTodo(todo model.Todo) error {
+	if err := todoRepo.Database.Save(&todo).Error; err != nil {
+		return err
+	}
+	return nil
+}

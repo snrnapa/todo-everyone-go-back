@@ -29,7 +29,7 @@ func main() {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -78,6 +78,7 @@ func main() {
 	protected.GET("/todos", todoHandler.GetTodos)
 	protected.POST("/todo", todoHandler.InsertTodo)
 	protected.DELETE("/todo", todoHandler.DeleteTodo)
+	protected.PATCH("/todo", todoHandler.UpdateTodo)
 
 	// comment Information
 	protected.POST("/comment", commentHandler.InsertComment)

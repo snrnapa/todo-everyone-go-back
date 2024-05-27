@@ -41,6 +41,14 @@ func (tu *TodoUsecase) DeleteTodo(id uint) error {
 	return err
 }
 
+func (tu *TodoUsecase) UpdateTodo(todo model.Todo) error {
+	err := tu.todoRepository.UpdateTodo(todo)
+	if err != nil {
+		fmt.Println("update to Todo :", err)
+	}
+	return err
+}
+
 // func (uc *TodoUsecase) GetUser(email string) (model.User, error) {
 // 	response, err := uc.userRepository.GetUser(email)
 // 	if err != nil {

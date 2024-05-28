@@ -15,6 +15,8 @@ import (
 )
 
 func main() {
+	middlewares.InitFirebase()
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file", err)
@@ -45,12 +47,6 @@ func main() {
 		),
 	)
 
-	authHandler := handler.NewAuthHandler(
-		usecase.NewUserUsecase(
-			repository.NewUserRepository(),
-		),
-	)
-
 	todoHandler := handler.NewTodoHandler(
 		usecase.NewTodoUsecase(
 			repository.NewTodoRepository(),
@@ -64,12 +60,9 @@ func main() {
 	)
 
 	// auth Logic
-	r.POST("/register", authHandler.Register)
-	r.POST("/login", authHandler.Login)
-	r.POST("/current-user", authHandler.FindCurrentUser)
 
 	protected := r.Group("/v1")
-	protected.Use(middlewares.JwtAuthMiddleware())
+	protected.Use(middlewares.AuthMiddleware())
 
 	// user Information
 	protected.GET("/user", userHandler.GetUser)

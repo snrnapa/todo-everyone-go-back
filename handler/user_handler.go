@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,11 +25,10 @@ func (uh *UserHandler) GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
-func (uh *UserHandler) GetUser(c *gin.Context) {
+func (uh *UserHandler) GetUserById(c *gin.Context) {
 
-	email := c.Query("email")
-	fmt.Println("input email :", email)
-	user, err := uh.userUsecase.GetUser(email)
+	userId := c.Query("user_id")
+	user, err := uh.userUsecase.GetUserById(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}

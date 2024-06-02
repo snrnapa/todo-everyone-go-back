@@ -28,7 +28,7 @@ func (tu *TodoUsecase) GetTodos() ([]model.Todo, error) {
 func (tu *TodoUsecase) InsertTodo(todo model.Todo) (model.Todo, error) {
 	response, err := tu.todoRepository.InsertTodo(todo)
 	if err != nil {
-		fmt.Println("failed to InsertTodo :", err)
+		return response, err
 	}
 	return response, err
 }

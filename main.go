@@ -41,6 +41,12 @@ func main() {
 		MaxAge: 12 * time.Hour,
 	}))
 
+	authHandler := handler.NewAuthHandler(
+		usecase.NewUserUsecase(
+			repository.NewUserRepository(),
+		),
+	)
+
 	userHandler := handler.NewUserHandler(
 		usecase.NewUserUsecase(
 			repository.NewUserRepository(),
@@ -59,13 +65,14 @@ func main() {
 		),
 	)
 
-	// auth Logic
-
 	protected := r.Group("/v1")
 	protected.Use(middlewares.AuthMiddleware())
 
+	// auth Logic
+	protected.POST("/register", authHandler.Register)
+
 	// user Information
-	protected.GET("/user", userHandler.GetUser)
+	protected.GET("/user", userHandler.GetUserById)
 
 	// todo information
 	protected.GET("/todos", todoHandler.GetTodos)

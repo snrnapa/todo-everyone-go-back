@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"strconv"
 	"sync"
 
 	"github.com/snrnapa/todo-everyone-go-back/model"
@@ -42,40 +41,4 @@ func Init(dsn string) {
 
 func GetDbInstantce() *gorm.DB {
 	return db
-}
-
-func CreateInitData() {
-	var users []model.User
-	var count int64
-
-	result := db.Find(&users).Count(&count)
-
-	if result.Error != nil {
-		fmt.Println("Error:", result.Error)
-	} else {
-		fmt.Println("initial date:", count)
-	}
-
-	if count == 0 {
-		count := 3
-		for i := 0; i < count; i++ {
-			countString := strconv.Itoa(i)
-			userName := "TestUser" + countString
-			userEmail := "testuser" + countString + "@gmail.com"
-			age := i
-
-			db.Create(
-				&model.User{
-					Password: "dummypass",
-					Name:     userName,
-					Email:    userEmail,
-					Age:      age,
-				})
-		}
-	} else {
-		fmt.Println("dont create init data Because you already have", count, "records")
-	}
-
-	fmt.Println("completed createting init user data")
-
 }

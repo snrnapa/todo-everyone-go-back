@@ -7,12 +7,11 @@ import (
 )
 
 type Todo struct {
-	UserId    uint      `gorm:"not null" json:"user_id"`
+	UserId    string    `gorm:"not null" json:"user_id"`
 	Title     string    `gorm:"type:varchar(100);not null" json:"title"`
 	Limit     time.Time `gorm:"type:timestamp;" json:"limit"`
 	Detail    string    `gorm:"type:varchar(100);" json:"detail"`
 	Completed bool      `gorm:"type:boolean;not null" json:"completed"`
-	Comments  []Comment `gorm:"foreignKey:TodoID" json:"comments"`
 	gorm.Model
 }
 

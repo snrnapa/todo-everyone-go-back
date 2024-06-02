@@ -28,16 +28,20 @@ func (ur *UserRepository) GetUser(email string) (model.User, error) {
 	return user, result.Error
 }
 
-func (ur *UserRepository) GetUserById(userId uint) (model.User, error) {
+func (ur *UserRepository) GetUserById(userId string) (model.User, error) {
 	var user model.User
-	result := ur.Database.Where("ID = ?", userId).Find(&user)
+	result := ur.Database.Where("user_id = ?", userId).Find(&user)
 	return user, result.Error
 }
 
-func (ur *UserRepository) Register(userCredential model.User) (model.User, error) {
-	err := ur.Database.Save(&userCredential).Error
-	if err != nil {
-		return userCredential, err
+func (ur *UserRepository) Register(userId string) (string, error) {
+	targetUser := model.User{
+		UserId: userId,
 	}
-	return userCredential, err
+
+	err := ur.Database.Save(&targetUser).Error
+	if err != nil {
+		return userId, err
+	}
+	return userId, err
 }

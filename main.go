@@ -59,6 +59,12 @@ func main() {
 		),
 	)
 
+	additionHandler := handler.NewAdditionHandler(
+		usecase.NewAdditionUsecase(
+			repository.NewAdditionRepository(),
+		),
+	)
+
 	commentHandler := handler.NewCommentHandler(
 		usecase.NewCommentUsecase(
 			repository.NewCommentRepository(),
@@ -79,6 +85,10 @@ func main() {
 	protected.POST("/todo", todoHandler.InsertTodo)
 	protected.DELETE("/todo", todoHandler.DeleteTodo)
 	protected.PATCH("/todo", todoHandler.UpdateTodo)
+
+	// addition information for todo
+	protected.POST("/favo", additionHandler.UpsertFavo)
+	// protected.POST("/book", additionHandler.UpdateBook)
 
 	// comment Information
 	protected.POST("/comment", commentHandler.InsertComment)

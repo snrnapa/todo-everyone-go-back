@@ -6,5 +6,4 @@ func ValidationCheck(input interface{}) error {
 	validate := validator.New()
 	err := validate.Struct(input)
 	return err
-
 }

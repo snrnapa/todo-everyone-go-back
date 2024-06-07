@@ -87,7 +87,7 @@ func main() {
 	protected.PATCH("/todo", todoHandler.UpdateTodo)
 
 	// addition information for todo
-	protected.POST("/favo", additionHandler.UpsertFavo)
+	protected.POST("/addition", additionHandler.UpsertAddition)
 	// protected.POST("/book", additionHandler.UpdateBook)
 
 	// comment Information

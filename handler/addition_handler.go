@@ -19,20 +19,20 @@ func NewAdditionHandler(additionUsecase *usecase.AdditionUsecase) *AdditionHandl
 	}
 }
 
-func (th *AdditionHandler) UpsertFavo(c *gin.Context) {
+func (th *AdditionHandler) UpsertAddition(c *gin.Context) {
 
-	var favo model.Addition
-	if err := c.BindJSON(&favo); err != nil {
+	var addition model.Addition
+	if err := c.BindJSON(&addition); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := util.ValidationCheck(favo); err != nil {
+	if err := util.ValidationCheck(addition); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"validation Error": err.Error()})
 		return
 	}
 
-	err := th.additionUsecase.UpsertFavo(favo)
+	err := th.additionUsecase.UpsertAddition(addition)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}

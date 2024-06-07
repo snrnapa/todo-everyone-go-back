@@ -17,7 +17,7 @@ func NewTodoUsecase(todoRepository *repository.TodoRepository) *TodoUsecase {
 	}
 }
 
-func (tu *TodoUsecase) GetTodos() ([]model.Todo, error) {
+func (tu *TodoUsecase) GetTodos() ([]repository.TodoWithAdditions, error) {
 	response, err := tu.todoRepository.GetTodos()
 	if err != nil {
 		fmt.Println("failed to GetTodos :", err)

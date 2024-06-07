@@ -16,8 +16,8 @@ func NewAdditionRepository() *AdditionRepository {
 	}
 }
 
-func (additionRepo *AdditionRepository) UpsertFavo(favo model.Addition) error {
-	if err := additionRepo.Database.Save(&favo).Error; err != nil {
+func (additionRepo *AdditionRepository) UpsertAddition(addition model.Addition) error {
+	if err := additionRepo.Database.Save(&addition).Error; err != nil {
 		return err
 	}
 	return nil

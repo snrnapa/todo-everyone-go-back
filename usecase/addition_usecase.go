@@ -17,10 +17,10 @@ func NewAdditionUsecase(additionRepository *repository.AdditionRepository) *Addi
 	}
 }
 
-func (tu *AdditionUsecase) UpsertFavo(favo model.Addition) error {
-	err := tu.additionRepository.UpsertFavo(favo)
+func (tu *AdditionUsecase) UpsertAddition(addition model.Addition) error {
+	err := tu.additionRepository.UpsertAddition(addition)
 	if err != nil {
-		fmt.Println("update to Favo :", err)
+		fmt.Println("update to addition :", err)
 	}
 	return err
 }

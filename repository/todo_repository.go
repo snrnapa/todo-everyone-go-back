@@ -61,6 +61,18 @@ func (todoRepo *TodoRepository) GetTodos() ([]TodoWithAdditions, error) {
 	return todoWithAdditions, result.Error
 }
 
+func (todoRepo *TodoRepository) GetTodoById(id string) ([]TodoWithAdditions, error) {
+	query := ``
+
+	var todoWithAdditions []TodoWithAdditions
+	result := todoRepo.Database.Raw(query).Scan(&todoWithAdditions)
+	if result.Error != nil {
+		log.Printf("query execution failed: %v", result.Error)
+		return nil, result.Error
+	}
+	return todoWithAdditions, result.Error
+}
+
 func (todoRepo *TodoRepository) InsertTodo(todo model.Todo) (model.Todo, error) {
 	result := todoRepo.Database.Save(&todo)
 	return todo, result.Error
@@ -85,6 +97,21 @@ type TodoWithAdditions struct {
 	Title         string `json:"title"`
 	Detail        string `json:"detail"`
 	Deadline      string `json:"deadline"` // Adjust the type if needed
+	Completed     bool   `json:"completed"`
+	FavoriteCount int    `json:"favorite_count"`
+	BookedCount   int    `json:"booked_count"`
+	CheeredCount  int    `json:"cheered_count"`
+	IsFavoriteMe  bool   `json:"is_favorite_me"`
+	IsBookedMe    bool   `json:"is_booked_me"`
+	IsCheeredMe   bool   `json:"is_cheered_me"`
+}
+
+type TodoDetail struct {
+	ID            int64  `json:"id"`
+	UserID        string `json:"user_id"`
+	Title         string `json:"title"`
+	Detail        string `json:"detail"`
+	Deadline      string `json:"deadline"`
 	Completed     bool   `json:"completed"`
 	FavoriteCount int    `json:"favorite_count"`
 	BookedCount   int    `json:"booked_count"`

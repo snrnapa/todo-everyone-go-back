@@ -82,6 +82,7 @@ func main() {
 
 	// todo information
 	protected.GET("/todos", todoHandler.GetTodos)
+	protected.GET("/todo/:id", todoHandler.GetTodoById)
 	protected.POST("/todo", todoHandler.InsertTodo)
 	protected.DELETE("/todo", todoHandler.DeleteTodo)
 	protected.PATCH("/todo", todoHandler.UpdateTodo)

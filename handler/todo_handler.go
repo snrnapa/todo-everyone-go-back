@@ -27,6 +27,15 @@ func (th *TodoHandler) GetTodos(c *gin.Context) {
 	c.JSON(http.StatusOK, todos)
 }
 
+func (th *TodoHandler) GetTodoById(c *gin.Context) {
+	id := c.Param("id")
+	todos, err := th.todoUsecase.GetTodoById(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	c.JSON(http.StatusOK, todos)
+}
+
 func (th *TodoHandler) InsertTodo(c *gin.Context) {
 
 	var todo model.Todo

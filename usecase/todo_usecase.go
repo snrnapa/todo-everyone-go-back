@@ -25,6 +25,14 @@ func (tu *TodoUsecase) GetTodos() ([]repository.TodoWithAdditions, error) {
 	return response, err
 }
 
+func (tu *TodoUsecase) GetTodoById(id string) ([]repository.TodoWithAdditions, error) {
+	response, err := tu.todoRepository.GetTodoById(id)
+	if err != nil {
+		fmt.Println("failed to GetTodos :", err)
+	}
+	return response, err
+}
+
 func (tu *TodoUsecase) InsertTodo(todo model.Todo) (model.Todo, error) {
 	response, err := tu.todoRepository.InsertTodo(todo)
 	if err != nil {

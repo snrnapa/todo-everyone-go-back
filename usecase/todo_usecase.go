@@ -25,12 +25,34 @@ func (tu *TodoUsecase) GetTodos() ([]repository.TodoWithAdditions, error) {
 	return response, err
 }
 
-func (tu *TodoUsecase) GetTodoById(id string) ([]repository.TodoWithAdditions, error) {
-	response, err := tu.todoRepository.GetTodoById(id)
+func (tu *TodoUsecase) GetTodoById(todoId string) (TodoInfoResponse, error) {
+	todo, err := tu.todoRepository.GetTodoById(todoId)
 	if err != nil {
-		fmt.Println("failed to GetTodos :", err)
+		return TodoInfoResponse{}, err
 	}
-	return response, err
+	comment, err := tu.todoRepository.GetCommentByTodoId(todoId)
+	if err != nil {
+		return TodoInfoResponse{}, err
+	}
+
+	result := TodoInfoResponse{
+		ID:            todo.ID,
+		UserID:        todo.UserID,
+		Title:         todo.Title,
+		Detail:        todo.Detail,
+		Deadline:      todo.Deadline,
+		Completed:     todo.Completed,
+		FavoriteCount: todo.FavoriteCount,
+		BookedCount:   todo.BookedCount,
+		CheeredCount:  todo.CheeredCount,
+		CommentCount:  len(comment),
+		IsFavoriteMe:  todo.IsFavoriteMe,
+		IsBookedMe:    todo.IsBookedMe,
+		IsCheeredMe:   todo.IsCheeredMe,
+		Comments:      comment,
+	}
+
+	return result, err
 }
 
 func (tu *TodoUsecase) InsertTodo(todo model.Todo) (model.Todo, error) {
@@ -57,10 +79,19 @@ func (tu *TodoUsecase) UpdateTodo(todo model.Todo) error {
 	return err
 }
 
-// func (uc *TodoUsecase) GetUser(email string) (model.User, error) {
-// 	response, err := uc.userRepository.GetUser(email)
-// 	if err != nil {
-// 		fmt.Println("failed to GetUser :", err)
-// 	}
-// 	return response, err
-// }
+type TodoInfoResponse struct {
+	ID            int64           `json:"id"`
+	UserID        string          `json:"user_id"`
+	Title         string          `json:"title"`
+	Detail        string          `json:"detail"`
+	Deadline      string          `json:"deadline"`
+	Completed     bool            `json:"completed"`
+	FavoriteCount int             `json:"favorite_count"`
+	BookedCount   int             `json:"booked_count"`
+	CheeredCount  int             `json:"cheered_count"`
+	CommentCount  int             `json:"comment_count"`
+	IsFavoriteMe  bool            `json:"is_favorite_me"`
+	IsBookedMe    bool            `json:"is_booked_me"`
+	IsCheeredMe   bool            `json:"is_cheered_me"`
+	Comments      []model.Comment `json:"comments"`
+}

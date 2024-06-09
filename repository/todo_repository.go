@@ -30,6 +30,7 @@ func (todoRepo *TodoRepository) GetTodos() ([]TodoWithAdditions, error) {
 		, COUNT(a.is_favorite) FILTER(WHERE a.is_favorite = TRUE) AS favorite_count
 		, COUNT(a.is_booked) FILTER(WHERE a.is_booked = TRUE) AS booked_count
 		, COUNT(a.is_cheered) FILTER(WHERE a.is_cheered = TRUE) AS cheered_count
+		, COUNT(com) AS comment_count
 		, bool_or(a.is_favorite) as is_favorite_me
 		, bool_or(a.is_booked) as is_booked_me
 		, bool_or(a.is_cheered) as is_cheered_me 
@@ -45,11 +46,13 @@ func (todoRepo *TodoRepository) GetTodos() ([]TodoWithAdditions, error) {
 				trn_additions a
 		) a 
 			ON t.id = a.todo_id 
+		LEFT JOIN comments com 
+			ON com.todo_id = t.id 
 	GROUP BY
 		t.id
 		, t.user_id 
 	order by
-		t.deadline;
+		t.created_at; 
 	`
 
 	var todoWithAdditions []TodoWithAdditions

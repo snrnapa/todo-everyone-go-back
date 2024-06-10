@@ -18,45 +18,65 @@ func NewTodoRepository() *TodoRepository {
 	}
 }
 
-func (todoRepo *TodoRepository) GetTodos() ([]TodoWithAdditions, error) {
+func (todoRepo *TodoRepository) GetTodos(userId string) ([]TodoWithAdditions, error) {
 	query := `
-	SELECT
+	with add_list as ( 
+		select
+			todos.user_id
+			, todos.id
+			, bool_or(ad.is_booked) as is_booked_me
+			, bool_or(ad.is_cheered) as is_cheered_me 
+		from
+			todos 
+			left join trn_additions ad 
+				on todos.id = ad.todo_id 
+				where ad.user_id = $1
+		group by
+			todos.user_id
+			, todos.id
+	) 
+	, comment as ( 
+		select
+			com.todo_id
+			, COUNT(com.user_id) AS comment_count 
+		from
+			comments com 
+		group by
+			todo_id
+	) 
+	, add_count as ( 
+		SELECT
+			a.todo_id
+			, COUNT(a.is_cheered) FILTER(WHERE a.is_cheered = TRUE) AS cheered_count
+			, COUNT(a.is_booked) FILTER(WHERE a.is_booked = TRUE) AS booked_count 
+		FROM
+			trn_additions a 
+		GROUP BY
+			a.todo_id
+	) 
+	select
 		t.id
 		, t.user_id
 		, t.title
 		, t.detail
 		, t.deadline
 		, t.completed
-		, COUNT(a.is_favorite) FILTER(WHERE a.is_favorite = TRUE) AS favorite_count
-		, COUNT(a.is_booked) FILTER(WHERE a.is_booked = TRUE) AS booked_count
-		, COUNT(a.is_cheered) FILTER(WHERE a.is_cheered = TRUE) AS cheered_count
-		, COUNT(com) AS comment_count
-		, bool_or(a.is_favorite) as is_favorite_me
-		, bool_or(a.is_booked) as is_booked_me
-		, bool_or(a.is_cheered) as is_cheered_me 
-	FROM
+		, ac.cheered_count
+		, ac.booked_count
+		, coalesce(al.is_booked_me, false) as is_booked_me
+		, coalesce(al.is_cheered_me, false) as is_cheered_me 
+	from
 		todos t 
-		LEFT JOIN ( 
-			SELECT
-				a.todo_id
-				, a.is_favorite
-				, a.is_booked
-				, a.is_cheered 
-			FROM
-				trn_additions a
-		) a 
-			ON t.id = a.todo_id 
-		LEFT JOIN comments com 
-			ON com.todo_id = t.id 
-	GROUP BY
-		t.id
-		, t.user_id 
-	order by
-		t.created_at; 
+		left join comment 
+			on t.id = comment.todo_id 
+		left join add_count ac 
+			on t.id = ac.todo_id 
+		left join add_list al 
+			on t.id = al.id;	
 	`
 
 	var todoWithAdditions []TodoWithAdditions
-	result := todoRepo.Database.Raw(query).Scan(&todoWithAdditions)
+	result := todoRepo.Database.Raw(query, userId).Scan(&todoWithAdditions)
 	if result.Error != nil {
 		log.Printf("query execution failed: %v", result.Error)
 		return nil, result.Error

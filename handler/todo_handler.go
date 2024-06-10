@@ -19,8 +19,8 @@ func NewTodoHandler(todoUsecase *usecase.TodoUsecase) *TodoHandler {
 }
 
 func (th *TodoHandler) GetTodos(c *gin.Context) {
-
-	todos, err := th.todoUsecase.GetTodos()
+	userId := c.Param("user_id")
+	todos, err := th.todoUsecase.GetTodos(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}

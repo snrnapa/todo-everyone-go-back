@@ -81,7 +81,7 @@ func main() {
 	protected.GET("/user", userHandler.GetUserById)
 
 	// todo information
-	protected.GET("/todos", todoHandler.GetTodos)
+	protected.GET("/todos/:user_id", todoHandler.GetTodos)
 	protected.GET("/todo/:id", todoHandler.GetTodoById)
 	protected.POST("/todo", todoHandler.InsertTodo)
 	protected.DELETE("/todo", todoHandler.DeleteTodo)

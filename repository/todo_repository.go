@@ -148,8 +148,39 @@ func (todoRepo *TodoRepository) InsertTodo(todo model.Todo) (model.Todo, error) 
 
 func (todoRepo *TodoRepository) DeleteTodo(id uint) error {
 	var todo model.Todo
-	result := todoRepo.Database.Unscoped().Delete(&todo, id)
-	return result.Error
+	var comment model.Comment
+	var additions model.Addition
+
+	tx := todoRepo.Database.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	// todosの削除
+	if err := tx.Unscoped().Delete(&todo, id).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Commentsの削除
+	if err := tx.Unscoped().Where("todo_id = ?", id).Delete(&comment).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// trn_additionsの削除
+	if err := tx.Unscoped().Where("todo_id = ?", id).Delete(&additions).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// コミットを行う。エラーが出ればロールバック
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
 }
 
 func (todoRepo *TodoRepository) UpdateTodo(todo model.Todo) error {

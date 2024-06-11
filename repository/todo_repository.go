@@ -65,10 +65,11 @@ func (todoRepo *TodoRepository) GetTodos(userId string) ([]TodoWithAdditions, er
 		, ac.booked_count
 		, coalesce(al.is_booked_me, false) as is_booked_me
 		, coalesce(al.is_cheered_me, false) as is_cheered_me 
+		, com.comment_count
 	from
 		todos t 
-		left join comment 
-			on t.id = comment.todo_id 
+		left join comment com
+			on t.id = com.todo_id 
 		left join add_count ac 
 			on t.id = ac.todo_id 
 		left join add_list al 

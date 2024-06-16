@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/snrnapa/todo-everyone-go-back/db"
@@ -83,6 +84,40 @@ func (todoRepo *TodoRepository) GetTodos(userId string) ([]TodoWithAdditions, er
 		return nil, result.Error
 	}
 	return todoWithAdditions, result.Error
+}
+
+func (todoRepo *TodoRepository) GetSummary(id string, today string, oneWeekLater string) ([]Summary, error) {
+
+	query := `
+	select
+		id
+		, user_id
+		, title
+		, deadline
+		, completed 
+	from
+		todos 
+	where
+		1 = 1 
+		and user_id = $1 
+		and deadline between $2 and $3;
+	`
+	var summary []Summary
+	result := todoRepo.Database.Raw(query, id, today, oneWeekLater).Scan(&summary)
+	fmt.Println(result)
+	if result.Error != nil {
+		log.Printf("query execution failed: %v", result.Error)
+		return summary, result.Error
+	}
+	return summary, nil
+}
+
+type Summary struct {
+	ID        int64  `json:"id"`
+	UserID    string `json:"user_id"`
+	Title     string `json:"title"`
+	Deadline  string `json:"deadline"` // Adjust the type if needed
+	Completed bool   `json:"completed"`
 }
 
 func (todoRepo *TodoRepository) GetTodoById(id string) (TodoWithAdditions, error) {

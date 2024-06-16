@@ -27,6 +27,16 @@ func (th *TodoHandler) GetTodos(c *gin.Context) {
 	c.JSON(http.StatusOK, todos)
 }
 
+func (th *TodoHandler) GetSummary(c *gin.Context) {
+
+	userId := c.Param("user_id")
+	summary, err := th.todoUsecase.GetSummary(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	c.JSON(http.StatusOK, summary)
+}
+
 func (th *TodoHandler) GetTodoById(c *gin.Context) {
 	id := c.Param("id")
 	todos, err := th.todoUsecase.GetTodoById(id)

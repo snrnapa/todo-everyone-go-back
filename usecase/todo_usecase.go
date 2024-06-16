@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/snrnapa/todo-everyone-go-back/model"
 	"github.com/snrnapa/todo-everyone-go-back/repository"
@@ -18,9 +19,25 @@ func NewTodoUsecase(todoRepository *repository.TodoRepository) *TodoUsecase {
 }
 
 func (tu *TodoUsecase) GetTodos(userId string) ([]repository.TodoWithAdditions, error) {
+
 	response, err := tu.todoRepository.GetTodos(userId)
 	if err != nil {
 		fmt.Println("failed to GetTodos :", err)
+	}
+	return response, err
+}
+
+func (tu *TodoUsecase) GetSummary(userId string) ([]repository.Summary, error) {
+	today := time.Now()
+	oneWeekLater := today.AddDate(0, 0, 7)
+	dateFormat := "2006-01-02"
+
+	todayString := today.Format(dateFormat)
+	oneWeekLaterString := oneWeekLater.Format(dateFormat)
+
+	response, err := tu.todoRepository.GetSummary(userId, todayString, oneWeekLaterString)
+	if err != nil {
+		fmt.Println("failed to GetSummary :", err)
 	}
 	return response, err
 }

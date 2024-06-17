@@ -16,6 +16,7 @@ type User struct {
 type Contact struct {
 	ID        uint           `gorm:"primaryKey"`
 	UserId    string         `gorm:"type:varchar(28)" json:"user_id"`
+	Category  string         `gorm:"type:varchar(20)" json:"category"`
 	Text      string         `gorm:"type:varchar(200)" json:"text"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`

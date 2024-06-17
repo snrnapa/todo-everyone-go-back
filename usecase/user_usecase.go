@@ -48,3 +48,11 @@ func (uc *UserUsecase) Register(userId string) error {
 	}
 	return err
 }
+
+func (uc *UserUsecase) InsertContact(contactInfo model.Contact) error {
+	err := uc.userRepository.InsertContact(contactInfo)
+	if err != nil {
+		return err
+	}
+	return nil
+}

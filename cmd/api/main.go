@@ -79,6 +79,7 @@ func main() {
 
 	// user Information
 	protected.GET("/user", userHandler.GetUserById)
+	protected.POST("/contact", userHandler.InsertContact)
 
 	// todo information
 	protected.GET("/todos/:user_id", todoHandler.GetTodos)

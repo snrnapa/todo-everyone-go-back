@@ -45,3 +45,11 @@ func (ur *UserRepository) Register(userId string) (string, error) {
 	}
 	return userId, err
 }
+
+func (ur *UserRepository) InsertContact(contactInfo model.Contact) error {
+	err := ur.Database.Save(&contactInfo).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

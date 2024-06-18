@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -15,9 +17,15 @@ import (
 )
 
 func main() {
-	middlewares.InitFirebase()
+	currentDir, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("error getting current directory: %v", err)
+	}
+	credentalFilePath := filepath.Join(currentDir, "serviceAccountKey.json")
+	middlewares.InitFirebase(credentalFilePath)
 
-	err := godotenv.Load("../../.env")
+	envFilePath := filepath.Join(currentDir, ".env")
+	err = godotenv.Load(envFilePath)
 	if err != nil {
 		log.Fatalf("Error loading .env file", err)
 

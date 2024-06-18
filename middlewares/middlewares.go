@@ -13,8 +13,9 @@ import (
 
 var client *auth.Client
 
-func InitFirebase() {
-	opt := option.WithCredentialsFile("./../../serviceAccountKey.json")
+func InitFirebase(jsonFilePath string) {
+
+	opt := option.WithCredentialsFile(jsonFilePath)
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)

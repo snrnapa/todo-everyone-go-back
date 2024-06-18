@@ -2,7 +2,9 @@ package db
 
 import (
 	"fmt"
+	"log"
 	"sync"
+	"time"
 
 	"github.com/snrnapa/todo-everyone-go-back/model"
 	"gorm.io/driver/postgres"
@@ -16,10 +18,23 @@ var (
 
 func Init(dsn string) {
 	once.Do(func() {
+		maxRetries := 10
+		retryInterval := time.Second * 5
+
 		var err error
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		if err != nil {
-			panic(fmt.Sprintf("failed to connecting database : %v", err))
+		for i := 0; i < maxRetries; i++ {
+			db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+			if err == nil {
+				log.Printf("Database connected successfully.")
+				break
+			}
+			log.Printf("Failed to connect to database: %v", err)
+			if i < maxRetries-1 {
+				log.Printf("Retrying in %s...", retryInterval)
+				time.Sleep(retryInterval)
+			} else {
+				panic(fmt.Sprintf("Failed to connect to database after %d attempts: %v", maxRetries, err))
+			}
 		}
 
 		err = db.AutoMigrate(&model.User{})

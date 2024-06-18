@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/snrnapa/todo-everyone-go-back/db"
 	"github.com/snrnapa/todo-everyone-go-back/handler"
 	"github.com/snrnapa/todo-everyone-go-back/middlewares"
@@ -24,14 +23,7 @@ func main() {
 	credentalFilePath := filepath.Join(currentDir, "serviceAccountKey.json")
 	middlewares.InitFirebase(credentalFilePath)
 
-	envFilePath := filepath.Join(currentDir, ".env")
-	err = godotenv.Load(envFilePath)
-	if err != nil {
-		log.Fatalf("Error loading .env file", err)
-
-	}
-
-	dsn := "host=localhost user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Tokyo"
+	dsn := "host=db user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Tokyo"
 	db.Init(dsn)
 	// db.CreateInitData()
 

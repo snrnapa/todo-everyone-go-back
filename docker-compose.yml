@@ -8,7 +8,21 @@ services:
       POSTGRES_PASSWORD: "todo-postgres"
       POSTGRES_DB: todo-postgres
     restart: always
-    ports: 
+    ports:
       - "5432:5432"
     volumes:
       - ./postgres/init:/docker-entrypoint-initdb.d
+
+  app:
+    build: .
+    container_name: go-app-container
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVICE_ACCOUNT_KEY_PATH=/root/serviceAccountKey.json
+      - DB_HOST=db
+      - DB_USER=todo-postgres
+      - DB_PASSWORD=todo-postgres
+      - DB_NAME=todo-postgres
+    depends_on:
+      - db

@@ -20,6 +20,36 @@ func main() {
 	if err != nil {
 		log.Fatalf("error getting current directory: %v", err)
 	}
+
+	logDir := filepath.Join(currentDir, "log")
+
+	if _, err := os.Stat(logDir); os.IsNotExist(err) {
+		err := os.Mkdir(logDir, 0755)
+		if err != nil {
+			log.Fatalf("error creating log directory: %v", err)
+		}
+	}
+	var logFile *os.File
+	setLogFile := func() {
+		logFileName := "app-" + time.Now().Format("2006-01-02") + ".log"
+		logFIlePath := filepath.Join(logDir, logFileName)
+
+		if logFile != nil {
+			logFile.Close()
+		}
+
+		var err error
+		logFile, err = os.OpenFile(logFIlePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatalf("failled to open log file: %v", err)
+		}
+
+		log.SetOutput(logFile)
+	}
+
+	setLogFile()
+	defer logFile.Close()
+
 	credentalFilePath := filepath.Join(currentDir, "serviceAccountKey.json")
 	middlewares.InitFirebase(credentalFilePath)
 

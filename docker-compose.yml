@@ -26,3 +26,5 @@ services:
       - DB_NAME=todo-postgres
     depends_on:
       - db
+    volumes:
+      - ./log:/app/log # ホストマシンのログフォルダをコンテナの/logにマウント

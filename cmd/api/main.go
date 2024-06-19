@@ -21,7 +21,8 @@ func main() {
 		log.Fatalf("error getting current directory: %v", err)
 	}
 
-	logDir := filepath.Join(currentDir, "log")
+	// logDir := filepath.Join(currentDir, "log")
+	logDir := "/app/log"
 
 	if _, err := os.Stat(logDir); os.IsNotExist(err) {
 		err := os.Mkdir(logDir, 0755)

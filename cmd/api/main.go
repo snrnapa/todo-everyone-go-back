@@ -67,7 +67,7 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			return origin == "http://localhost:5173"
+			return origin == "http://localhost:5173" || origin == "https://todo-everyone.web.app"
 		},
 		MaxAge: 12 * time.Hour,
 	}))

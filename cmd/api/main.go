@@ -49,7 +49,12 @@ func main() {
 	}
 
 	setLogFile()
-	defer logFile.Close()
+	defer func() {
+		if logFile != nil {
+			logFile.Close()
+			log.Println("Log file closed")
+		}
+	}()
 
 	credentalFilePath := filepath.Join(currentDir, "serviceAccountKey.json")
 	middlewares.InitFirebase(credentalFilePath)

@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,12 +34,16 @@ func (uh *AuthHandler) Register(c *gin.Context) {
 
 	err := util.ValidationCheck(registerInput)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"validation Error": err.Error()})
+		errMsg := fmt.Sprintf("ユーザー登録処理中にエラーが発生しました: %v", err.Error())
+		log.Println(errMsg)
+		c.JSON(http.StatusBadRequest, gin.H{"validation Error": errMsg})
 		return
 	}
 
 	if err := uh.userUsecase.Register(registerInput.UserId); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while registering user"})
+		errMsg := fmt.Sprintf("ユーザー登録処理中にエラーが発生しました: %v", err.Error())
+		log.Println(errMsg)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": errMsg})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
@@ -47,7 +53,9 @@ func (uh *AuthHandler) Login(c *gin.Context) {
 
 	var registerInput RegisterInput
 	if err := c.BindJSON(&registerInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		errMsg := fmt.Sprintf("ログイン処理中にサーバーでエラーが発生しました: %v", err.Error())
+		log.Println(errMsg)
+		c.JSON(http.StatusBadRequest, gin.H{"error": errMsg})
 		return
 	}
 	uh.userUsecase.GetUserById(registerInput.UserId)

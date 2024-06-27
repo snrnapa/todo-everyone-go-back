@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -30,13 +32,17 @@ func (ch *CommentHandler) InsertComment(c *gin.Context) {
 
 	var comment model.Comment
 	if err := c.BindJSON(&comment); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		errMsg := fmt.Sprintf("サーバーでコメント追加の解析中にエラーが発生しました: %v", err.Error())
+		log.Println(errMsg)
+		c.JSON(http.StatusBadRequest, gin.H{"error": errMsg})
 		return
 	}
 
 	todo, err := ch.commentUsecase.InsertComment(comment)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		errMsg := fmt.Sprintf("サーバーでコメント追加中にエラーが発生しました: %v", err.Error())
+		log.Println(errMsg)
+		c.JSON(http.StatusBadRequest, errMsg)
 	}
 	c.JSON(http.StatusOK, todo)
 }

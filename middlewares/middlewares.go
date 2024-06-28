@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -42,6 +43,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			log.Println("error: Unauthorized because of authHeader None")
 			c.Abort()
 			return
 		}
@@ -52,6 +54,8 @@ func AuthMiddleware() gin.HandlerFunc {
 		token, err := verifyToken(idToken)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			errMsg := fmt.Sprintf("error: Unauthorized : %v", err)
+			log.Println(errMsg)
 			c.Abort()
 			return
 		}

@@ -39,6 +39,7 @@ func (th *TodoHandler) GetSummary(c *gin.Context) {
 	if err != nil {
 		errMsg := fmt.Sprintf("サーバーでSummaryの取得中にエラーが発生しました : %v", err.Error())
 		log.Println(errMsg)
+		fmt.Println(errMsg)
 		c.JSON(http.StatusBadRequest, errMsg)
 	}
 	c.JSON(http.StatusOK, summary)

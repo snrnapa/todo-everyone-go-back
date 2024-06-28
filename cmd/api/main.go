@@ -107,7 +107,7 @@ func main() {
 		),
 	)
 
-	protected := r.Group("/every-todo/v1")
+	protected := r.Group("/v1")
 	protected.Use(middlewares.AuthMiddleware())
 
 	// auth Logic

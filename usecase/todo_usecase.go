@@ -42,8 +42,8 @@ func (tu *TodoUsecase) GetSummary(userId string) ([]repository.Summary, error) {
 	return response, err
 }
 
-func (tu *TodoUsecase) GetTodoById(todoId string) (TodoInfoResponse, error) {
-	todo, err := tu.todoRepository.GetTodoById(todoId)
+func (tu *TodoUsecase) GetTodoById(todoId string, userId string) (TodoInfoResponse, error) {
+	todo, err := tu.todoRepository.GetTodoById(todoId, userId)
 	if err != nil {
 		return TodoInfoResponse{}, err
 	}

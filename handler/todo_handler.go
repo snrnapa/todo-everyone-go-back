@@ -47,7 +47,8 @@ func (th *TodoHandler) GetSummary(c *gin.Context) {
 
 func (th *TodoHandler) GetTodoById(c *gin.Context) {
 	id := c.Param("id")
-	todos, err := th.todoUsecase.GetTodoById(id)
+	userId := c.Query("userId")
+	todos, err := th.todoUsecase.GetTodoById(id, userId)
 	if err != nil {
 		errMsg := fmt.Sprintf("サーバーでTodoのIDで検索中にエラーが発生しました : %v", err.Error())
 		log.Println(errMsg)

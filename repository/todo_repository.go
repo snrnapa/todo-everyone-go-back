@@ -120,7 +120,7 @@ type Summary struct {
 	Completed bool   `json:"completed"`
 }
 
-func (todoRepo *TodoRepository) GetTodoById(id string) (TodoWithAdditions, error) {
+func (todoRepo *TodoRepository) GetTodoById(id string, userId string) (TodoWithAdditions, error) {
 	query := `
 	select
 		td.id
@@ -132,9 +132,6 @@ func (todoRepo *TodoRepository) GetTodoById(id string) (TodoWithAdditions, error
 		, COUNT(ad.is_favorite) FILTER(WHERE ad.is_favorite = TRUE) AS favorite_count
 		, COUNT(ad.is_booked) FILTER(WHERE ad.is_booked = TRUE) AS booked_count
 		, COUNT(ad.is_cheered) FILTER(WHERE ad.is_cheered = TRUE) AS cheered_count
-		, bool_or(ad.is_favorite) as is_favorite_me
-		, bool_or(ad.is_booked) as is_booked_me
-		, bool_or(ad.is_cheered) as is_cheered_me 
 	from
 		todos td
 		left join trn_additions ad 
@@ -149,6 +146,24 @@ func (todoRepo *TodoRepository) GetTodoById(id string) (TodoWithAdditions, error
 
 	var todoWithAdditions TodoWithAdditions
 	result := todoRepo.Database.Raw(query, id).Scan(&todoWithAdditions)
+	if result.Error != nil {
+		log.Printf("query execution failed: %v", result.Error)
+		return todoWithAdditions, result.Error
+	}
+
+	add_query := `
+	select
+		is_favorite as is_favorite_me
+		, is_booked as is_booked_me
+		, is_cheered as is_cheered_me 
+	from
+		trn_additions t 
+	where
+		1 = 1 
+		and todo_id = $1
+		and user_id = $2;`
+
+	result = todoRepo.Database.Raw(add_query, id, userId).Scan(&todoWithAdditions)
 	if result.Error != nil {
 		log.Printf("query execution failed: %v", result.Error)
 		return todoWithAdditions, result.Error

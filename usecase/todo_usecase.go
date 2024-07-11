@@ -1,11 +1,12 @@
 package usecase
 
 import (
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/snrnapa/todo-everyone-go-back/model"
 	"github.com/snrnapa/todo-everyone-go-back/repository"
+	"gorm.io/gorm"
 )
 
 type TodoUsecase struct {
@@ -19,10 +20,18 @@ func NewTodoUsecase(todoRepository *repository.TodoRepository) *TodoUsecase {
 }
 
 func (tu *TodoUsecase) GetTodos(userId string) ([]repository.TodoWithAdditions, error) {
-
-	response, err := tu.todoRepository.GetTodos(userId)
+	var response []repository.TodoWithAdditions
+	err := tu.todoRepository.Database.Transaction(func(tx *gorm.DB) error {
+		var err error
+		response, err = tu.todoRepository.GetTodos(tx, userId)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
-		fmt.Println("failed to GetTodos :", err)
+		log.Println("failed to GetTodos :", err)
+		return nil, err
 	}
 	return response, err
 }
@@ -34,10 +43,18 @@ func (tu *TodoUsecase) GetSummary(userId string) ([]repository.Summary, error) {
 
 	todayString := today.Format(dateFormat)
 	oneWeekLaterString := oneWeekLater.Format(dateFormat)
-
-	response, err := tu.todoRepository.GetSummary(userId, todayString, oneWeekLaterString)
+	var response []repository.Summary
+	err := tu.todoRepository.Database.Transaction(func(tx *gorm.DB) error {
+		var err error
+		response, err = tu.todoRepository.GetSummary(tx, userId, todayString, oneWeekLaterString)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
-		fmt.Println("failed to GetSummary :", err)
+		log.Println("failed to GetSummary :", err)
+		return nil, err
 	}
 	return response, err
 }
@@ -72,9 +89,24 @@ func (tu *TodoUsecase) GetTodoById(todoId string, userId string) (TodoInfoRespon
 	return result, err
 }
 
-func (tu *TodoUsecase) InsertTodo(todo model.Todo) (model.Todo, error) {
-	response, err := tu.todoRepository.InsertTodo(todo)
+func (tu *TodoUsecase) InsertTodo(todo model.Todo) ([]repository.TodoWithAdditions, error) {
+	var response []repository.TodoWithAdditions
+	userId := todo.UserId
+
+	err := tu.todoRepository.Database.Transaction(func(tx *gorm.DB) error {
+		var err error
+		response, err = tu.todoRepository.InsertTodo(tx, todo)
+		if err != nil {
+			return err
+		}
+		response, err = tu.todoRepository.GetTodos(tx, userId)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
+		log.Println("failed to GetSummary :", err)
 		return response, err
 	}
 	return response, err
@@ -83,7 +115,7 @@ func (tu *TodoUsecase) InsertTodo(todo model.Todo) (model.Todo, error) {
 func (tu *TodoUsecase) DeleteTodo(id uint) error {
 	err := tu.todoRepository.DeleteTodo(id)
 	if err != nil {
-		fmt.Println("failed to InsertTodo :", err)
+		log.Println("failed to InsertTodo :", err)
 	}
 	return err
 }
@@ -91,7 +123,7 @@ func (tu *TodoUsecase) DeleteTodo(id uint) error {
 func (tu *TodoUsecase) UpdateTodo(todo model.Todo) error {
 	err := tu.todoRepository.UpdateTodo(todo)
 	if err != nil {
-		fmt.Println("update to Todo :", err)
+		log.Println("update to Todo :", err)
 	}
 	return err
 }

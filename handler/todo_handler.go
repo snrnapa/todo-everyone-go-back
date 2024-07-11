@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/snrnapa/todo-everyone-go-back/model"
+	"github.com/snrnapa/todo-everyone-go-back/repository"
 	"github.com/snrnapa/todo-everyone-go-back/usecase"
 )
 
@@ -66,14 +67,15 @@ func (th *TodoHandler) InsertTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMsg})
 		return
 	}
+	var response []repository.TodoWithAdditions
 
-	todo, err := th.todoUsecase.InsertTodo(todo)
+	response, err := th.todoUsecase.InsertTodo(todo)
 	if err != nil {
 		errMsg := fmt.Sprintf("サーバーでTodoの登録中にエラーが発生しました: %v", err.Error())
 		log.Println(errMsg)
 		c.JSON(http.StatusBadRequest, errMsg)
 	}
-	c.JSON(http.StatusOK, todo)
+	c.JSON(http.StatusOK, response)
 }
 
 func (th *TodoHandler) DeleteTodo(c *gin.Context) {

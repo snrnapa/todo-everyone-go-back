@@ -61,6 +61,7 @@ func main() {
 
 	dsn := "host=db user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Tokyo"
 	db.Init(dsn)
+	dbInstance := db.GetDbInstantce()
 	// db.CreateInitData()
 
 	r := gin.Default()
@@ -91,7 +92,7 @@ func main() {
 
 	todoHandler := handler.NewTodoHandler(
 		usecase.NewTodoUsecase(
-			repository.NewTodoRepository(),
+			repository.NewTodoRepository(dbInstance),
 		),
 	)
 

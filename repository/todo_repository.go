@@ -1,10 +1,8 @@
 package repository
 
 import (
-	"fmt"
 	"log"
 
-	"github.com/snrnapa/todo-everyone-go-back/db"
 	"github.com/snrnapa/todo-everyone-go-back/model"
 	"gorm.io/gorm"
 )
@@ -13,13 +11,13 @@ type TodoRepository struct {
 	Database *gorm.DB
 }
 
-func NewTodoRepository() *TodoRepository {
+func NewTodoRepository(db *gorm.DB) *TodoRepository {
 	return &TodoRepository{
-		Database: db.GetDbInstantce(),
+		Database: db,
 	}
 }
 
-func (todoRepo *TodoRepository) GetTodos(userId string) ([]TodoWithAdditions, error) {
+func (todoRepo *TodoRepository) GetTodos(tx *gorm.DB, userId string) ([]TodoWithAdditions, error) {
 	query := `
 	with add_list as ( 
 		select
@@ -78,15 +76,15 @@ func (todoRepo *TodoRepository) GetTodos(userId string) ([]TodoWithAdditions, er
 	`
 
 	var todoWithAdditions []TodoWithAdditions
-	result := todoRepo.Database.Raw(query, userId).Scan(&todoWithAdditions)
-	if result.Error != nil {
-		log.Printf("query execution failed: %v", result.Error)
-		return nil, result.Error
+	if err := tx.Raw(query, userId).Scan(&todoWithAdditions); err != nil {
+		log.Printf("query execution failed: %v", err)
+		return nil, err.Error
 	}
-	return todoWithAdditions, result.Error
+
+	return todoWithAdditions, nil
 }
 
-func (todoRepo *TodoRepository) GetSummary(id string, today string, oneWeekLater string) ([]Summary, error) {
+func (todoRepo *TodoRepository) GetSummary(tx *gorm.DB, id string, today string, oneWeekLater string) ([]Summary, error) {
 
 	query := `
 	select
@@ -103,11 +101,10 @@ func (todoRepo *TodoRepository) GetSummary(id string, today string, oneWeekLater
 		and deadline between $2 and $3;
 	`
 	var summary []Summary
-	result := todoRepo.Database.Raw(query, id, today, oneWeekLater).Scan(&summary)
-	fmt.Println(result)
-	if result.Error != nil {
-		log.Printf("query execution failed: %v", result.Error)
-		return summary, result.Error
+	if err := tx.Raw(query, id, today, oneWeekLater).Scan(&summary); err != nil {
+		log.Printf("query execution failed: %v", err.Error)
+		return summary, err.Error
+
 	}
 	return summary, nil
 }
@@ -191,9 +188,13 @@ func (todoRepo *TodoRepository) GetCommentByTodoId(todoId string) ([]model.Comme
 	return comments, result.Error
 }
 
-func (todoRepo *TodoRepository) InsertTodo(todo model.Todo) (model.Todo, error) {
-	result := todoRepo.Database.Save(&todo)
-	return todo, result.Error
+func (todoRepo *TodoRepository) InsertTodo(tx *gorm.DB, todo model.Todo) ([]TodoWithAdditions, error) {
+	var dummyResponse []TodoWithAdditions
+	if err := tx.Save(&todo); err != nil {
+		log.Printf("query execution failed: %v", err.Error)
+		return dummyResponse, err.Error
+	}
+	return dummyResponse, nil
 }
 
 func (todoRepo *TodoRepository) DeleteTodo(id uint) error {
@@ -245,7 +246,7 @@ type TodoWithAdditions struct {
 	UserID        string `json:"user_id"`
 	Title         string `json:"title"`
 	Detail        string `json:"detail"`
-	Deadline      string `json:"deadline"` // Adjust the type if needed
+	Deadline      string `json:"deadline"`
 	Completed     bool   `json:"completed"`
 	FavoriteCount int    `json:"favorite_count"`
 	BookedCount   int    `json:"booked_count"`

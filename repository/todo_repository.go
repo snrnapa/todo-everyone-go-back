@@ -76,9 +76,10 @@ func (todoRepo *TodoRepository) GetTodos(tx *gorm.DB, userId string) ([]TodoWith
 	`
 
 	var todoWithAdditions []TodoWithAdditions
-	if err := tx.Raw(query, userId).Scan(&todoWithAdditions); err != nil {
+	err := tx.Raw(query, userId).Scan(&todoWithAdditions).Error
+	if err != nil {
 		log.Printf("query execution failed: %v", err)
-		return nil, err.Error
+		return nil, err
 	}
 
 	return todoWithAdditions, nil
@@ -101,9 +102,9 @@ func (todoRepo *TodoRepository) GetSummary(tx *gorm.DB, id string, today string,
 		and deadline between $2 and $3;
 	`
 	var summary []Summary
-	if err := tx.Raw(query, id, today, oneWeekLater).Scan(&summary); err != nil {
+	if err := tx.Raw(query, id, today, oneWeekLater).Scan(&summary).Error; err != nil {
 		log.Printf("query execution failed: %v", err.Error)
-		return summary, err.Error
+		return summary, err
 
 	}
 	return summary, nil
@@ -190,9 +191,9 @@ func (todoRepo *TodoRepository) GetCommentByTodoId(todoId string) ([]model.Comme
 
 func (todoRepo *TodoRepository) InsertTodo(tx *gorm.DB, todo model.Todo) ([]TodoWithAdditions, error) {
 	var dummyResponse []TodoWithAdditions
-	if err := tx.Save(&todo); err != nil {
+	if err := tx.Save(&todo).Error; err != nil {
 		log.Printf("query execution failed: %v", err.Error)
-		return dummyResponse, err.Error
+		return dummyResponse, err
 	}
 	return dummyResponse, nil
 }

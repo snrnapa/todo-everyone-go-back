@@ -21,15 +21,27 @@ func main() {
 		log.Fatalf("error getting current directory: %v", err)
 	}
 
-	// logDir := filepath.Join(currentDir, "log")
-	logDir := "/app/log"
+	// 環境変数で環境を判別
+	env := os.Getenv("ENV")
+	var logDir string
 
+	if env == "docker" {
+		logDir = "/app/log"
+	} else {
+		logDir = filepath.Join(currentDir, "log")
+	}
+
+	// ログディレクトリが存在しない場合は作成する
 	if _, err := os.Stat(logDir); os.IsNotExist(err) {
-		err := os.Mkdir(logDir, 0755)
+		err := os.MkdirAll(logDir, 0755)
 		if err != nil {
 			log.Fatalf("error creating log directory: %v", err)
 		}
+		log.Printf("created log directory: %s", logDir)
+	} else {
+		log.Printf("log directory already exists: %s", logDir)
 	}
+
 	var logFile *os.File
 	setLogFile := func() {
 		logFileName := "app-" + time.Now().Format("2006-01-02") + ".log"
@@ -59,7 +71,7 @@ func main() {
 	credentalFilePath := filepath.Join(currentDir, "serviceAccountKey.json")
 	middlewares.InitFirebase(credentalFilePath)
 
-	dsn := "host=db user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Tokyo"
+	dsn := "host=localhost user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Tokyo"
 	db.Init(dsn)
 	dbInstance := db.GetDbInstantce()
 	// db.CreateInitData()

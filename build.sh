@@ -7,4 +7,4 @@
 # 本番環境では、goのインストールを行っていないため、go appの起動自体もdockerで行っているため、
 # docker-compose-prod.ymlの内容でコンテナの作成を行う必要がある。
 sudo docker-compose build
-sudo docker compose -f docker-compose.yml -f docker-compose-prod.yml up -d
+sudo docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d

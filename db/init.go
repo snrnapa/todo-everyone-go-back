@@ -18,8 +18,8 @@ var (
 
 func Init(dsn string) {
 	once.Do(func() {
-		maxRetries := 10
-		retryInterval := time.Second * 5
+		maxRetries := 20
+		retryInterval := time.Second * 20
 
 		var err error
 		for i := 0; i < maxRetries; i++ {

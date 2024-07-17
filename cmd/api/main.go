@@ -71,7 +71,7 @@ func main() {
 	credentalFilePath := filepath.Join(currentDir, "serviceAccountKey.json")
 	middlewares.InitFirebase(credentalFilePath)
 
-	dsn := "host=localhost user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Tokyo"
+	dsn := "host=db user=todo-postgres dbname=todo-postgres password=todo-postgres port=5432 sslmode=disable TimeZone=Asia/Tokyo"
 	db.Init(dsn)
 	dbInstance := db.GetDbInstantce()
 	// db.CreateInitData()

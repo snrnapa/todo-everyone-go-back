@@ -72,7 +72,9 @@ func (todoRepo *TodoRepository) GetTodos(tx *gorm.DB, userId string) ([]TodoWith
 		left join add_count ac 
 			on t.id = ac.todo_id 
 		left join add_list al 
-			on t.id = al.id;	
+			on t.id = al.id
+	ORDER BY
+    	t.deadline;	
 	`
 
 	var todoWithAdditions []TodoWithAdditions
